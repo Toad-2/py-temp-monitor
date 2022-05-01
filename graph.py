@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 from time import localtime, strftime
 from glob import glob
 from os import path
-# from runtime import keep
+from runtime import keep
 
 # ingest function: takes given array of csv entries and separates into three lists before returning with proper labels
 def ingest(given):
@@ -52,14 +52,9 @@ def plot(passed):
     # saves graph as jpg image (currently named output.jpg)
     plt.savefig("output.jpg", dpi=300)
 
-''' 
-idea: if newest file does not have 24 hours of data (using the 5 minute pull time math, 288 entries + one header line) grab the next oldest file and combine
-'''
-
 if __name__ == '__main__':
-
     # finds all files matching name pattern for log file using glob
-    search = glob('temp_log-*')
+    search = glob('logs/temp_log-*')
     # sort files by creation time oldest to newest
     search.sort(key=path.getmtime)
 
@@ -67,10 +62,25 @@ if __name__ == '__main__':
     with open(search[-1], "r") as f:
         t = f.readlines()
 
-    if len(t) == 289:  # keep:
-        del t[0]  # removes header
-        take = ingest(t)  # pass file data to ingest function to process for plotting
-        plot(take)  # pass processed data to plotting function
+    while True:
+        if len(t) == keep:
+            del t[0]  # removes header
+            take = ingest(t)  # pass file data to ingest function to process for plotting
+            plot(take)  # pass processed data to plotting function
+            break
+        elif len(t) > keep:
+            while len(t) > keep:
+                del t[1]
+        else:
+            del search[-1]  # removes last entry in file listing
 
-    else:
-        print('to short: ', len(t))
+            with open(search[-1], 'r') as g:  # reads new last entry
+                tt = g.readlines()
+
+            del t[0]  # remove header from first list
+            t.insert(0,tt[0])  # replace with new header
+            del tt[0]  # remove header from new list
+
+            for z in range(len(tt)):
+                t.insert(1, tt[-1])
+                del tt[-1]
