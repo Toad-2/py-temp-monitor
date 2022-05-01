@@ -58,7 +58,7 @@ if __name__ == '__main__':
 
     # creates JSON log file
     timestamp = localtime()
-    filename = f'temp_log-{timestamp[1]}_{timestamp[2]}_{timestamp[0]}_{timestamp[3]}_{timestamp[4]}.csv'
+    filename = f'logs/temp_log-{timestamp[1]}_{timestamp[2]}_{timestamp[0]}_{timestamp[3]}_{timestamp[4]}.csv'
 
     with open(filename, 'w') as file:
         file.write(f"{int(round(time(), 0))},probe 1,probe 2\n")
