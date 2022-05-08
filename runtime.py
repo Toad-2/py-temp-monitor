@@ -73,6 +73,10 @@ if __name__ == '__main__':
         two = reader(probe2)
 
         # appends temp entries to file using file_append function
-        file_append(one, two)
+        # file_append(one, two)
+
+        # appends data directly to csv file
+        with open(filename, 'a') as g:
+            g.write("{},{},{}".format(int(round(time(),0)), one, two) + '\n')
 
         sleep(checkSec)
