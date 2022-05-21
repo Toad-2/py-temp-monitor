@@ -1,3 +1,7 @@
+# imports
+from glob import glob
+from time import time, localtime, sleep
+
 # time between data pull in minutes
 checkTime = 5
 
@@ -21,31 +25,7 @@ def reader(given):
     # returns temperature data for the probe in celsius rounded to the 100th
     return round(tempC, 2)
 
-# takes values from probes and appends to rolling csv log
-def file_append(e1, e2):
-    # opens log file and dumps all entries to list
-    with open(filename, 'r') as f:
-        given = f.readlines()
-
-    # Takes length of list
-    # If not over length, appends entry to bottom of csv file.
-    # If over specified length, removes second item, appends new item and returns list to csv file.
-    if len(given) <= keep - 1:  # -1 accounts for list indexing from zero
-        with open(filename, 'a') as l:
-            l.write("{},{},{}".format(int(round(time(),0)), e1, e2) + '\n')
-    else:
-        del given[1]
-        given.append("{},{},{}".format(int(round(time(),0)), e1, e2) + '\n')
-        with open(filename, 'w') as e:
-            for i in given:
-                e.write(i)
-
 if __name__ == '__main__':
-    # imports
-    # imports are inside if statement to hopefully prevent external routine graph.py from wasting time on importing them when it calls for var keep
-    from glob import glob
-    from time import time, localtime, sleep
-
     # finds and prepares one wire devices devices
     base_path = '/sys/bus/w1/devices/'
     dev_search = glob(base_path + '28*')
@@ -71,9 +51,6 @@ if __name__ == '__main__':
         # reads data from probes using reader function and assigns returned values to variables
         one = reader(probe1)
         two = reader(probe2)
-
-        # appends temp entries to file using file_append function
-        # file_append(one, two)
 
         # appends data directly to csv file
         with open(filename, 'a') as g:
