@@ -37,9 +37,6 @@ def plot(passed):
     plt.xlabel('Time')
     plt.ylabel('Temp (C)')
 
-    # plt.legend()
-    # plt.title('Temperature')
-
     # create custom x-axis major ticks spaced 5 hours apart
     w = [rear_hour]
     inc = 3600 * 5
@@ -61,17 +58,15 @@ def plot(passed):
     # limit x-axis to between first and last major tick
     plt.xlim(w[0],w[-1])
 
-    # saves graph as jpg image (currently named output.jpg)
-    plt.savefig("output.jpg", dpi=300)
+    # limit y-axis between min and max temp (with spacing of 0.5 degree for looks)
+    plt.ylim(passed["minimum"] - 0.5, passed["maximum"] + 0.5)
+
+    # saves graph as jpg image (currently named day.jpg)
+    plt.savefig("day.jpg", dpi=300)
 
 if __name__ == '__main__':
-    # finds all files matching name pattern for log file using glob
-    search = glob('logs/temp_log-*')
-    # sort files by creation time oldest to newest
-    search.sort(key=path.getmtime)
-
     # adds 5 minutes to current time
-    x = time() + 600
+    x = time() + 300
 
     # creates datetime timestamp from +5 minute time an breaks into year, month, day, hour
     s = dt.fromtimestamp(x)
@@ -91,6 +86,13 @@ if __name__ == '__main__':
 
     # removes 24 hours (86400 seconds) from unix timestamp
     rear_hour = ts - 86400
+
+
+    # finds all files matching name pattern for log file using glob
+    search = glob('logs/temp_log-*')
+
+    # sort files by creation time oldest to newest
+    search.sort(key=path.getmtime)
 
     # opens newest file and dumps all lines to an array
     with open(search[-1], "r") as f:
