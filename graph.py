@@ -64,6 +64,39 @@ def plot(passed):
     # saves graph as jpg image (currently named day.jpg)
     plt.savefig("day.jpg", dpi=300)
 
+def delta(passed):
+    d = []
+    for v in range(len(passed['hot'])):
+        d.append(passed['hot'][v] - passed['cold'][v])
+
+    plt.plot(passed['time'], d,label='Delta', color='grey')
+    plt.xlabel('Time')
+    plt.ylabel('Temp (C)')
+
+    # create custom x-axis major ticks spaced 5 hours apart
+    w = [rear_hour]
+    inc = 3600 * 5
+    for i in range(5):
+        w.append(w[i] + inc)
+
+    # build labels for x-axis ticks
+    labels = [strftime("%H:%M", localtime(m)) for m in w]
+
+    # set custom ticks and labels on x-axis
+    plt.xticks(w, labels)
+
+    # show minor ticks
+    plt.minorticks_on()
+
+    # display grid lines of major ticks on x and y axis
+    plt.grid()
+
+    # limit x-axis to between first and last major tick
+    plt.xlim(w[0], w[-1])
+
+    # saves graph as jpg image (currently named day.jpg)
+    plt.savefig("delta.jpg", dpi=300)
+
 if __name__ == '__main__':
     # adds 5 minutes to current time
     x = time() + 300
@@ -102,7 +135,15 @@ if __name__ == '__main__':
         if int(t[1].split(',')[0]) <= rear_hour:
             del t[0]  # removes header
             take = ingest(t)  # pass file data to ingest function to process for plotting
-            plot(take)  # pass processed data to plotting function
+
+            # pass processed data to plotting function
+            plot(take)
+            # reset/ clear plot data for delta function
+            plt.clf()
+            # create and plot temp delta to separate graph
+            delta(take)
+
+            # break from loop and terminate script
             break
         else:
             del search[-1]  # removes last entry in file listing
